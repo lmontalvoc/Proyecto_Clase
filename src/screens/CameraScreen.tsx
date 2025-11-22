@@ -5,7 +5,7 @@ import CustomButton from '../components/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 
 async function fakeClassifyImage(uri: string): Promise<{ label: string; confidence: number }> {
-  // Simulación mientras conectan ML Kit real
+  // Simulación mientras conectamos ML Kit real
   const labels = ['Perro', 'Gato', 'Planta', 'Persona', 'Objeto desconocido'];
   const randomIndex = Math.floor(Math.random() * labels.length);
   const confidence = 60 + Math.floor(Math.random() * 40);

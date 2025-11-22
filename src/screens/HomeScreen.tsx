@@ -9,7 +9,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>¿Qué Es Esto?</Text>
+      <Text style={styles.title}>¿Qué es Esto?</Text>
       <Text style={styles.subtitle}>
         Apunta la cámara a un objeto y deja que la app intente identificarlo.
       </Text>

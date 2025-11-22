@@ -1,11 +1,13 @@
+import 'react-native-get-random-values';
 import React from 'react';
 import RootNavigator from './src/navigation/RootNavigator';
-import { DetectionsProvider } from './src/context/DetectionsContext';
+import { Provider } from 'react-redux';
+import { store } from './src/store';
 
 export default function App() {
   return (
-    <DetectionsProvider>
+    <Provider store={store}>
       <RootNavigator />
-    </DetectionsProvider>
+    </Provider>
   );
 }
