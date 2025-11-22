@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
+import { Camera, useCameraPermissions, CameraView } from 'expo-camera';
 import CustomButton from '../components/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 
@@ -16,9 +16,9 @@ async function fakeClassifyImage(uri: string): Promise<{ label: string; confiden
 }
 
 const CameraScreen = () => {
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [permission, requestPermission] = useCameraPermissions();
   const [isProcessing, setIsProcessing] = useState(false);
-  const cameraRef = useRef<Camera | null>(null);
+  const cameraRef = useRef<CameraView | null>(null);
   const navigation = useNavigation<any>();
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const CameraScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Camera ref={cameraRef} style={styles.camera} type={CameraType.back} />
+      <CameraView ref={cameraRef} style={styles.camera} facing="back" />
       <View style={styles.bottomBar}>
         {isProcessing ? (
           <ActivityIndicator />
