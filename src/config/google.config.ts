@@ -1,0 +1,1 @@
+export const GOOGLE_VISION_API_KEY = "AQUI_TU_API_KEY";

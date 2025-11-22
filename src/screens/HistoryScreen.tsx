@@ -1,10 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
-import { useDetections } from '../context/DetectionsContext';
+import { useAppSelector } from '../store/hooks';
 
 const HistoryScreen = () => {
-  const { detections } = useDetections();
-
+  const detections = useAppSelector(state => state.detections.items);
   return (
     <View style={styles.container}>
       {detections.length === 0 ? (
