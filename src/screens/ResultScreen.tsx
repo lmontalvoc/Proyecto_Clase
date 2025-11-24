@@ -1,81 +1,67 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Alert } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/RootNavigator';
-import CustomButton from '../components/CustomButton';
-import CustomInput from '../components/CustomInput';
-import { useDetections } from '../context/DetectionsContext';
-import { Detection } from '../types/detection';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState } from "react";
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { useDispatch } from "react-redux";
+import { addHistory } from "../store/slices/historySlice";
+import { v4 as uuid } from "uuid";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Result'>;
-
-const ResultScreen: React.FC<Props> = ({ route, navigation }) => {
+export default function ResultScreen({ route, navigation }: any) {
   const { imageUri, label, confidence } = route.params;
-  const { addDetection } = useDetections();
-  const [notes, setNotes] = useState('');
-  const [error, setError] = useState<string | undefined>();
+
+  const [notes, setNotes] = useState("");
+  const dispatch = useDispatch();
 
   const handleSave = () => {
-    if (!label) {
-      setError('No hay etiqueta para guardar.');
-      return;
-    }
-    setError(undefined);
-
-    const now = new Date();
-    const detection: Detection = {
-      id: uuidv4(),
+    dispatch(addHistory({
+      id: uuid(),
+      imageUri,
       label,
       confidence,
-      createdAt: now.toLocaleString(),
-      imageUri,
       notes,
-    };
+      date: new Date().toLocaleString(),
+    }));
 
-    addDetection(detection);
-    Alert.alert('Guardado', 'La detección se guardó en el historial.');
-    navigation.navigate('Tabs', { screen: 'Historial' });
+    navigation.navigate("Historial");
   };
 
   return (
     <View style={styles.container}>
       <Image source={{ uri: imageUri }} style={styles.image} />
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.confidence}>{confidence}% de confianza</Text>
 
-      <CustomInput
-        label="Notas (opcional)"
-        placeholder="Ej: Perro que vimos en el parque"
+      <Text style={styles.label}>Objeto identificado: {label}</Text>
+      <Text style={styles.conf}>Confianza: {confidence.toFixed(1)}%</Text>
+
+      <TextInput
+        placeholder="Notas (opcional)"
+        style={styles.input}
         value={notes}
         onChangeText={setNotes}
-        error={error}
       />
 
-      <CustomButton title="Guardar en historial" onPress={handleSave} />
+      <TouchableOpacity style={styles.btn} onPress={handleSave}>
+        <Text style={styles.btnTxt}>Guardar en historial</Text>
+      </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
+  container: { flex: 1, padding: 20 },
+  image: { width: "100%", height: 250, borderRadius: 12, marginBottom: 20 },
+  label: { fontSize: 20, fontWeight: "bold" },
+  conf: { marginBottom: 15 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    height: 70,
+    padding: 10,
+    marginBottom: 20,
   },
-  image: {
-    width: '100%',
-    height: 250,
+  btn: {
+    backgroundColor: "#222",
+    padding: 14,
     borderRadius: 12,
-    marginBottom: 16,
+    alignItems: "center",
   },
-  label: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  confidence: {
-    marginBottom: 16,
-  },
+  btnTxt: { color: "white", fontWeight: "bold" },
 });
-
-export default ResultScreen;

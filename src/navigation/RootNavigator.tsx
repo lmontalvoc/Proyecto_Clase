@@ -1,23 +1,15 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import HomeScreen from '../screens/HomeScreen';
-import CameraScreen from '../screens/CameraScreen';
-import ResultScreen from '../screens/ResultScreen';
-import HistoryScreen from '../screens/HistoryScreen';
+import HomeScreen from "../screens/HomeScreen";
+import CameraScreen from "../screens/CameraScreen";
+import HistoryScreen from "../screens/HistoryScreen";
+import ResultScreen from "../screens/ResultScreen";
+import AppearanceScreen from "../screens/AppearanceScreen";
 
-export type RootStackParamList = {
-  Tabs: undefined;
-  Result: {
-    imageUri: string;
-    label: string;
-    confidence: number;
-  };
-};
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function Tabs() {
@@ -30,19 +22,14 @@ function Tabs() {
   );
 }
 
-const RootNavigator = () => {
+export default function RootNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Tabs"
-          component={Tabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Result" component={ResultScreen} options={{ title: 'Resultado' }} />
+        <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
+        <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen name="Apariencia" component={AppearanceScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
-
-export default RootNavigator;
+}

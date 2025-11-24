@@ -1,11 +1,18 @@
-import React from 'react';
-import RootNavigator from './src/navigation/RootNavigator';
-import { DetectionsProvider } from './src/context/DetectionsContext';
+import "react-native-get-random-values";
+import React from "react";
+
+import RootNavigator from "./src/navigation/RootNavigator";
+import { Provider } from "react-redux";
+import store from "./src/store";
+
+import { ThemeProvider } from "./src/theme/ThemeContext";
 
 export default function App() {
   return (
-    <DetectionsProvider>
-      <RootNavigator />
-    </DetectionsProvider>
+    <Provider store={store}>
+      <ThemeProvider>
+        <RootNavigator />
+      </ThemeProvider>
+    </Provider>
   );
 }
