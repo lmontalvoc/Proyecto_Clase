@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { addHistory } from "../store/slices/historySlice";
 import { v4 as uuid } from "uuid";
@@ -9,10 +9,6 @@ export default function ResultScreen({ route, navigation }: any) {
 
   const [notes, setNotes] = useState("");
   const dispatch = useDispatch();
-
-  // Debug: log the imported action to ensure it's defined
-  // eslint-disable-next-line no-console
-  console.log("addHistory imported:", addHistory);
 
   const handleSave = () => {
     const payload = {
@@ -24,17 +20,8 @@ export default function ResultScreen({ route, navigation }: any) {
       date: new Date().toLocaleString(),
     };
 
-    if (typeof addHistory === "function") {
-      dispatch(addHistory(payload));
-    } else {
-      // Fallback: dispatch plain action object by type
-      // eslint-disable-next-line no-console
-      console.warn("addHistory is not a function, dispatching fallback action");
-      dispatch({ type: "history/addHistory", payload });
-    }
-
-    // `Historial` is a screen inside the `Tabs` navigator. ResultScreen is in the
-    // stack navigator, so navigate to the nested tab by targeting `Tabs`.
+    dispatch(addHistory(payload));
+    Alert.alert("Guardado", "La detección se guardó en el historial.");
     navigation.navigate("Tabs", { screen: "Historial" });
   };
 
