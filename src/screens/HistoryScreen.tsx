@@ -3,13 +3,7 @@ import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function HistoryScreen() {
-  const items = useSelector((state: any) => {
-    // Log the entire Redux state to help debug why `history` might be undefined
-    // (remove or comment out this log once the issue is diagnosed)
-    // eslint-disable-next-line no-console
-    console.log("Redux state in HistoryScreen:", state);
-    return state?.history?.items ?? [];
-  });
+  const items = useSelector((state: any) => state?.history?.items ?? []);
 
   return (
     <ScrollView style={styles.container}>
