@@ -10,17 +10,32 @@ export default function ResultScreen({ route, navigation }: any) {
   const [notes, setNotes] = useState("");
   const dispatch = useDispatch();
 
+  // Debug: log the imported action to ensure it's defined
+  // eslint-disable-next-line no-console
+  console.log("addHistory imported:", addHistory);
+
   const handleSave = () => {
-    dispatch(addHistory({
+    const payload = {
       id: uuid(),
       imageUri,
       label,
       confidence,
       notes,
       date: new Date().toLocaleString(),
-    }));
+    };
 
-    navigation.navigate("Historial");
+    if (typeof addHistory === "function") {
+      dispatch(addHistory(payload));
+    } else {
+      // Fallback: dispatch plain action object by type
+      // eslint-disable-next-line no-console
+      console.warn("addHistory is not a function, dispatching fallback action");
+      dispatch({ type: "history/addHistory", payload });
+    }
+
+    // `Historial` is a screen inside the `Tabs` navigator. ResultScreen is in the
+    // stack navigator, so navigate to the nested tab by targeting `Tabs`.
+    navigation.navigate("Tabs", { screen: "Historial" });
   };
 
   return (

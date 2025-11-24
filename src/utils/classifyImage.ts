@@ -3,8 +3,10 @@ import { GOOGLE_VISION_API_KEY } from "../config/google.config";
 
 export async function classifyImage(uri: string) {
   try {
+    // Some Expo versions may not expose EncodingType; fallback to literal 'base64'
+    const encoding = (FileSystem as any)?.EncodingType?.Base64 ?? "base64";
     const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding,
     });
 
     const body = {
