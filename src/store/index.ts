@@ -1,6 +1,21 @@
 import { configureStore } from "@reduxjs/toolkit";
-import historyReducer from "./slices/historySlice";
-import uiReducer from "./slices/uiSlice";
+import * as historyReducerMod from "./slices/historySlice";
+import * as uiReducerMod from "./slices/uiSlice";
+
+// Ensure compatibility with different module interop styles (default vs named)
+const historyReducer = (historyReducerMod as any)?.default ?? (historyReducerMod as any);
+const uiReducer = (uiReducerMod as any)?.default ?? (uiReducerMod as any);
+
+if (typeof historyReducer !== "function" || typeof uiReducer !== "function") {
+  // Helpful debug info if reducers are not functions at runtime
+  // eslint-disable-next-line no-console
+  console.error("Store reducers are invalid:", {
+    historyReducerType: typeof historyReducer,
+    uiReducerType: typeof uiReducer,
+    historyReducerMod,
+    uiReducerMod,
+  });
+}
 
 export const store = configureStore({
   reducer: {
