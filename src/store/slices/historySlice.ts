@@ -27,13 +27,6 @@ export const historySlice = createSlice({
   },
 });
 
-// Debug: log created slice shape to ensure actions/reducer are available at runtime
-// eslint-disable-next-line no-console
-console.log("historySlice debug:", {
-  actions: Object.keys(historySlice.actions || {}),
-  reducerType: typeof historySlice.reducer,
-});
-
 export const { addHistory } = historySlice.actions;
 
 export default historySlice.reducer;
