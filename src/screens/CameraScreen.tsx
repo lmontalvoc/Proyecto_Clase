@@ -80,7 +80,7 @@ export default function CameraScreen() {
 
       {/* Título estilo Amazon Lens */}
       <View style={styles.header}>
-        <Text style={styles.title}>QEE ai</Text>
+        <Text style={styles.title}>QEE AI</Text>
 
         <TouchableOpacity onPress={() => setFlash(flash === "off" ? "on" : "off")}>
           <Text style={styles.flash}>{flash === "off" ? "⚡" : "✖️"}</Text>
