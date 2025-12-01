@@ -1,5 +1,5 @@
-#import <React/RCTBridgeModule.h>
+#import <RNGetRandomValuesSpec/RNGetRandomValuesSpec.h>
 
-@interface RNGetRandomValues : NSObject <RCTBridgeModule>
--(NSString*)getRandomBase64:(NSUInteger)byteLength;
+@interface RNGetRandomValues : NSObject <NativeRNGetRandomValuesSpec>
+
 @end
