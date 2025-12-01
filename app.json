@@ -1,7 +1,12 @@
 {
   "expo": {
+<<<<<<< HEAD
     "name": "BookeArte",
     "slug": "BookeArte",
+=======
+    "name": "que-es-esto",
+    "slug": "que-es-esto",
+>>>>>>> development
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
