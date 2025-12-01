@@ -1,54 +1,67 @@
 buildscript {
-    // The Android Gradle plugin is only required when opening the android folder stand-alone.
-    // This avoids unnecessary downloads and potential conflicts when the library is included as a
-    // module dependency in an application project.
-    if (project == rootProject) {
-        repositories {
-            mavenCentral()
-            google()
-        }
-        def buildGradleVersion = ext.has('buildGradlePluginVersion') ? ext.get('buildGradlePluginVersion') : '4.2.2'
+  repositories {
+    google()
+    mavenCentral()
+  }
 
-        dependencies {
-            classpath "com.android.tools.build:gradle:$buildGradleVersion"
-        }
-    }
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.7.2"
+  }
 }
 
-apply plugin: 'com.android.library'
+
+apply plugin: "com.android.library"
+
+apply plugin: "com.facebook.react"
 
 def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  return rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
 android {
-    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
-    if (agpVersion >= 7) {
-      namespace 'org.linusu'
-    }
-    compileSdkVersion safeExtGet('compileSdkVersion', 30)
-    buildToolsVersion safeExtGet('buildToolsVersion', '30.0.3')
+  namespace "org.linusu"
 
-    defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 16)
-        targetSdkVersion safeExtGet('targetSdkVersion', 30)
-        versionCode 1
-        versionName "1.0"
+  compileSdkVersion safeExtGet("compileSdkVersion", 35)
+
+  defaultConfig {
+    minSdkVersion safeExtGet("minSdkVersion", 24)
+    targetSdkVersion safeExtGet("targetSdkVersion", 34)
+  }
+
+  buildFeatures {
+    buildConfig true
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
     }
-    lintOptions {
-        abortOnError false
+  }
+
+  lintOptions {
+    disable "GradleCompatible"
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs += [
+        "generated/java",
+        "generated/jni"
+      ]
     }
+  }
 }
 
 repositories {
-    mavenCentral()
-    google()
-    maven {
-        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-        url "$rootDir/../node_modules/react-native/android"
-    }
+  mavenCentral()
+  google()
 }
 
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
+  implementation "com.facebook.react:react-android"
 }
