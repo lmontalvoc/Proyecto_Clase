@@ -1,55 +1,92 @@
-import React, { useContext } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { ThemeContext } from "../theme/ThemeContext";
-import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { View, Text, ActivityIndicator, Image, StyleSheet } from "react-native";
+import { auth, db } from "../firebase/firebaseConfig";
+import { doc, onSnapshot } from "firebase/firestore";
+
+interface UserData {
+  email: string;
+  username: string;
+}
+
+const logo = require("../assets/logo.png");
 
 export default function HomeScreen() {
-  const { theme } = useContext(ThemeContext);
-  const navigation = useNavigation<any>();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+
+    const unsubscribe = onSnapshot(
+      userRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setUserData(docSnap.data() as UserData);
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.log("Error al escuchar cambios:", error);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.loadingText}>Cargando datos...</Text>
+      </View>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.notFound}>No hay datos del usuario</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Image source={require("../assets/logo.png")} style={styles.logo} />
-      <Text style={[styles.title, { color: theme.text }]}>¿Qué Es Esto?</Text>
-      <Text style={[styles.subtitle, { color: theme.text }]}>
-        Apunta la cámara a un objeto y deja que la app intente identificarlo.
-      </Text>
-
-      <TouchableOpacity
-        style={[styles.btn, { backgroundColor: theme.button }]}
-        onPress={() => navigation.navigate("Cámara")}
-      >
-        <Text style={[styles.btnTxt, { color: theme.buttonText }]}>
-          Abrir Cámara
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.btnSecondary]}
-        onPress={() => navigation.navigate("Apariencia")}
-      >
-        <Text style={{ color: theme.text }}>Cambiar apariencia</Text>
-      </TouchableOpacity>
+    <View style={styles.screen}>
+      <View style={styles.card}>
+        <Image source={logo} style={styles.logo} resizeMode="contain" />
+        <Text style={styles.welcome}>Bienvenido 👋</Text>
+        <Text style={styles.info}>Email: {userData.email}</Text>
+        <Text style={styles.info}>Usuario: {userData.username}</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  logo: { width: 140, height: 140, marginBottom: 20 },
-  title: { fontSize: 28, fontWeight: "bold" },
-  subtitle: { fontSize: 16, textAlign: "center", marginBottom: 20 },
-  btn: {
-    padding: 12,
-    paddingHorizontal: 35,
-    borderRadius: 12,
-    marginTop: 10,
+  screen: { flex: 1, backgroundColor: "#f2f6ff", justifyContent: "center", alignItems: "center" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  loadingText: { marginTop: 8, color: "#5b6b8a" },
+  notFound: { color: "#5b6b8a" },
+  card: {
+    width: "90%",
+    maxWidth: 540,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 24,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    elevation: 3,
   },
-  btnTxt: { fontSize: 16, fontWeight: "bold" },
-  btnSecondary: {
-    marginTop: 20,
-    padding: 10,
-    paddingHorizontal: 30,
-    borderRadius: 12,
-  },
+  logo: { width: 100, height: 100, marginBottom: 12 },
+  welcome: { fontSize: 22, fontWeight: "700", color: "#0b2545", marginBottom: 8 },
+  info: { color: "#333", marginTop: 6 },
 });
