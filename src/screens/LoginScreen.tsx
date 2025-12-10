@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useState } from "react";
-=======
 import React, { useState, useContext } from "react";
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 import {
   View,
   TextInput,
@@ -15,10 +11,7 @@ import {
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
-<<<<<<< HEAD
-=======
 import { ThemeContext } from "../theme/ThemeContext";
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "../navigation/types";
 
@@ -30,10 +23,7 @@ export default function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState(false);
-<<<<<<< HEAD
-=======
   const { mode, setMode } = useContext(ThemeContext);
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 
   const handleLogin = async (): Promise<void> => {
     setLoading(true);
@@ -48,21 +38,6 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
-<<<<<<< HEAD
-      style={styles.screen}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <View style={styles.container}>
-        <Image source={logo} style={styles.logo} resizeMode="contain" />
-
-        <Text style={styles.title}>Bienvenido</Text>
-        <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
-
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-=======
       style={[styles.screen, { backgroundColor: mode === "light" ? "#f2f6ff" : "#0f1419" }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
@@ -84,21 +59,15 @@ export default function LoginScreen({ navigation }: Props) {
             style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
             placeholder="Email"
             placeholderTextColor={mode === "light" ? "#999" : "#666"}
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
           />
           <TextInput
-<<<<<<< HEAD
-            style={styles.input}
-            placeholder="Contraseña"
-=======
             style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
             placeholder="Contraseña"
             placeholderTextColor={mode === "light" ? "#999" : "#666"}
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
             secureTextEntry
             value={password}
             onChangeText={setPassword}
@@ -109,11 +78,7 @@ export default function LoginScreen({ navigation }: Props) {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate("ResetPassword")}>
-<<<<<<< HEAD
-            <Text style={styles.forgotButtonText}>¿Olvidaste tu contraseña?</Text>
-=======
             <Text style={[styles.forgotButtonText, { color: mode === "light" ? "#999" : "#888" }]}>¿Olvidaste tu contraseña?</Text>
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.ghostButton} onPress={() => navigation.navigate("Register")}>
@@ -126,17 +91,6 @@ export default function LoginScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-<<<<<<< HEAD
-  screen: { flex: 1, backgroundColor: "#f2f6ff" },
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 24 },
-  logo: { width: 140, height: 140, marginBottom: 16 },
-  title: { fontSize: 26, fontWeight: "700", color: "#0b2545", marginBottom: 6 },
-  subtitle: { color: "#5b6b8a", marginBottom: 20 },
-  form: { width: "100%", maxWidth: 380, alignItems: "center" },
-  input: {
-    width: "100%",
-    backgroundColor: "#fff",
-=======
   screen: { flex: 1 },
   header: {
     flexDirection: "row",
@@ -159,7 +113,6 @@ const styles = StyleSheet.create({
   form: { width: "100%", maxWidth: 380, alignItems: "center" },
   input: {
     width: "100%",
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderRadius: 10,
@@ -178,11 +131,7 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: { color: "#fff", fontWeight: "600" },
   forgotButton: { marginTop: 12, paddingVertical: 8 },
-<<<<<<< HEAD
-  forgotButtonText: { color: "#999", fontSize: 13, fontWeight: "500" },
-=======
   forgotButtonText: { fontSize: 13, fontWeight: "500" },
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
   ghostButton: { marginTop: 12 },
   ghostButtonText: { color: "#4A90E2" },
 });

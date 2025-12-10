@@ -1,50 +1,3 @@
-<<<<<<< HEAD
-import * as FileSystem from "expo-file-system";
-import { GOOGLE_VISION_API_KEY } from "../config/google.config";
-
-export async function classifyImage(uri: string) {
-  try {
-    // Some Expo versions may not expose EncodingType; fallback to literal 'base64'
-    const encoding = (FileSystem as any)?.EncodingType?.Base64 ?? "base64";
-    const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding,
-    });
-
-    const body = {
-      requests: [
-        {
-          image: { content: base64 },
-          features: [{ type: "LABEL_DETECTION", maxResults: 3 }],
-        },
-      ],
-    };
-
-    const response = await fetch(
-      `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_VISION_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      }
-    );
-
-    const json = await response.json();
-
-    if (!json.responses || !json.responses[0].labelAnnotations) {
-      return { label: "Objeto no identificado", confidence: 0 };
-    }
-
-    const best = json.responses[0].labelAnnotations[0];
-
-    return {
-      label: best.description,
-      confidence: best.score * 100,
-    };
-  } catch (err) {
-    console.log("Error identificando imagen:", err);
-    return {
-      label: "Objeto no identificado",
-=======
 import { HUGGING_FACE_API_KEY, GOOGLE_VISION_API_KEY } from "../config/google.config";
 import { classifyImageLocalCanvas } from "./localClassifier";
 
@@ -195,13 +148,10 @@ export async function classifyImage(uri: string) {
     console.error("Error identificando imagen:", err);
     return {
       label: "Error al procesar imagen",
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
       confidence: 0,
     };
   }
 }
-<<<<<<< HEAD
-=======
 
 // Parser para resultados de Hugging Face
 function parseHuggingFaceResult(data: any[]): any {
@@ -267,4 +217,3 @@ function parseGoogleVisionResult(json: any): any {
 
   return { label: "Objeto no identificado", confidence: 0 };
 }
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14

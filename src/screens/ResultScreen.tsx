@@ -30,11 +30,7 @@ export default function ResultScreen({ route, navigation }: any) {
       <Image source={{ uri: imageUri }} style={styles.image} />
 
       <Text style={styles.label}>Objeto identificado: {label}</Text>
-<<<<<<< HEAD
-      <Text style={styles.conf}>Confianza: {confidence.toFixed(1)}%</Text>
-=======
       {/* <Text style={styles.conf}>Confianza: {confidence.toFixed(1)}%</Text> */}
->>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 
       <TextInput
         placeholder="Notas (opcional)"
