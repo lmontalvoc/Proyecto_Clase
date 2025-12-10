@@ -11,6 +11,7 @@ import ResultScreen from "../screens/ResultScreen";
 import AppearanceScreen from "../screens/AppearanceScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import LoginScreen from "../screens/LoginScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -33,6 +34,7 @@ function AuthStack() {
     <Stack.Navigator>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 }

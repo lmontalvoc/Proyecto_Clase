@@ -66,6 +66,10 @@ export default function LoginScreen({ navigation }: Props) {
             <Text style={styles.primaryButtonText}>{loading ? "Ingresando..." : "Iniciar sesión"}</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate("ResetPassword")}>
+            <Text style={styles.forgotButtonText}>¿Olvidaste tu contraseña?</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.ghostButton} onPress={() => navigation.navigate("Register")}>
             <Text style={styles.ghostButtonText}>Crear cuenta</Text>
           </TouchableOpacity>
@@ -102,6 +106,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   primaryButtonText: { color: "#fff", fontWeight: "600" },
+  forgotButton: { marginTop: 12, paddingVertical: 8 },
+  forgotButtonText: { color: "#999", fontSize: 13, fontWeight: "500" },
   ghostButton: { marginTop: 12 },
   ghostButtonText: { color: "#4A90E2" },
 });
