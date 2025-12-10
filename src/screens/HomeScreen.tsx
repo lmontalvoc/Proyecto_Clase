@@ -62,6 +62,7 @@ export default function HomeScreen() {
     <View style={styles.screen}>
       <View style={styles.card}>
         <Image source={logo} style={styles.logo} resizeMode="contain" />
+        <Text style={styles.appName}>¿Qué Es Esto?</Text>
         <Text style={styles.welcome}>Bienvenido 👋</Text>
         <Text style={styles.info}>Email: {userData.email}</Text>
         <Text style={styles.info}>Usuario: {userData.username}</Text>
@@ -87,6 +88,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   logo: { width: 100, height: 100, marginBottom: 12 },
+  appName: { fontSize: 20, fontWeight: "800", color: "#0b2545", marginBottom: 6 },
   welcome: { fontSize: 22, fontWeight: "700", color: "#0b2545", marginBottom: 8 },
   info: { color: "#333", marginTop: 6 },
 });

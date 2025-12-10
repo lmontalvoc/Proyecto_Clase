@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   TextInput,
@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
+import { ThemeContext } from "../theme/ThemeContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "../navigation/types";
 
@@ -22,6 +23,7 @@ export default function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const { mode, setMode } = useContext(ThemeContext);
 
   const handleLogin = async (): Promise<void> => {
     setLoading(true);
@@ -36,27 +38,36 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.screen}
+      style={[styles.screen, { backgroundColor: mode === "light" ? "#f2f6ff" : "#0f1419" }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <View style={styles.header}>
+        <Text style={[styles.appName, { color: mode === "light" ? "#0b2545" : "#fff" }]}>¿Qué Es Esto?</Text>
+        <TouchableOpacity onPress={() => setMode(mode === "light" ? "dark" : "light")}>
+          <Text style={styles.themeButton}>{mode === "light" ? "🌙" : "☀️"}</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.container}>
         <Image source={logo} style={styles.logo} resizeMode="contain" />
 
-        <Text style={styles.title}>Bienvenido</Text>
-        <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+        <Text style={[styles.title, { color: mode === "light" ? "#0b2545" : "#fff" }]}>Bienvenido</Text>
+        <Text style={[styles.subtitle, { color: mode === "light" ? "#5b6b8a" : "#a8b8c8" }]}>Inicia sesión para continuar</Text>
 
         <View style={styles.form}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
             placeholder="Email"
+            placeholderTextColor={mode === "light" ? "#999" : "#666"}
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
             placeholder="Contraseña"
+            placeholderTextColor={mode === "light" ? "#999" : "#666"}
             secureTextEntry
             value={password}
             onChangeText={setPassword}
@@ -67,7 +78,7 @@ export default function LoginScreen({ navigation }: Props) {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate("ResetPassword")}>
-            <Text style={styles.forgotButtonText}>¿Olvidaste tu contraseña?</Text>
+            <Text style={[styles.forgotButtonText, { color: mode === "light" ? "#999" : "#888" }]}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.ghostButton} onPress={() => navigation.navigate("Register")}>
@@ -80,15 +91,28 @@ export default function LoginScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f2f6ff" },
+  screen: { flex: 1 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  appName: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  themeButton: {
+    fontSize: 24,
+  },
   container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 24 },
   logo: { width: 140, height: 140, marginBottom: 16 },
-  title: { fontSize: 26, fontWeight: "700", color: "#0b2545", marginBottom: 6 },
-  subtitle: { color: "#5b6b8a", marginBottom: 20 },
+  title: { fontSize: 26, fontWeight: "700", marginBottom: 6 },
+  subtitle: { marginBottom: 20 },
   form: { width: "100%", maxWidth: 380, alignItems: "center" },
   input: {
     width: "100%",
-    backgroundColor: "#fff",
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderRadius: 10,
@@ -107,7 +131,7 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: { color: "#fff", fontWeight: "600" },
   forgotButton: { marginTop: 12, paddingVertical: 8 },
-  forgotButtonText: { color: "#999", fontSize: 13, fontWeight: "500" },
+  forgotButtonText: { fontSize: 13, fontWeight: "500" },
   ghostButton: { marginTop: 12 },
   ghostButtonText: { color: "#4A90E2" },
 });

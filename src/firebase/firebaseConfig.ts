@@ -15,6 +15,10 @@ apiKey: "AIzaSyCmFJLURMmcdkYAaALe3VerUweU7rZhzHA",
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
+// Usar getAuth en lugar de initializeAuth con AsyncStorage para
+// mantener la persistencia EN MEMORIA (no se guarda entre reinicios de la app).
+// Esto hace que la sesión permanezca mientras la app esté abierta,
+// y al cerrarla el usuario deba volver a iniciar sesión.
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 

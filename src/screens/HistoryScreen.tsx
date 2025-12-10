@@ -16,7 +16,7 @@ export default function HistoryScreen() {
 
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>{item.label}</Text>
-            <Text style={styles.conf}>Confianza: {item.confidence.toFixed(1)}%</Text>
+            {/* <Text style={styles.conf}>Confianza: {item.confidence.toFixed(1)}%</Text> */}
             <Text style={styles.date}>{item.date}</Text>
             {item.notes ? <Text style={styles.notes}>Notas: {item.notes}</Text> : null}
           </View>
