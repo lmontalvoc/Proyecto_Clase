@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
+=======
+import React, { useState, useContext } from "react";
+>>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 import {
   View,
   TextInput,
@@ -12,6 +16,10 @@ import {
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseConfig";
+<<<<<<< HEAD
+=======
+import { ThemeContext } from "../theme/ThemeContext";
+>>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "../navigation/types";
 
@@ -24,6 +32,10 @@ export default function RegisterScreen({ navigation }: Props) {
   const [password, setPassword] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState(false);
+<<<<<<< HEAD
+=======
+  const { mode, setMode } = useContext(ThemeContext);
+>>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 
   const handleRegister = async (): Promise<void> => {
     setLoading(true);
@@ -46,6 +58,7 @@ export default function RegisterScreen({ navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
+<<<<<<< HEAD
       style={styles.screen}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
@@ -59,6 +72,49 @@ export default function RegisterScreen({ navigation }: Props) {
           <TextInput style={styles.input} placeholder="Usuario" value={username} onChangeText={setUsername} />
           <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
           <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
+=======
+      style={[styles.screen, { backgroundColor: mode === "light" ? "#f2f6ff" : "#0f1419" }]}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={styles.header}>
+        <Text style={[styles.appName, { color: mode === "light" ? "#0b2545" : "#fff" }]}>¿Qué Es Esto?</Text>
+        <TouchableOpacity onPress={() => setMode(mode === "light" ? "dark" : "light")}>
+          <Text style={styles.themeButton}>{mode === "light" ? "🌙" : "☀️"}</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.container}>
+        <Image source={logo} style={styles.logo} resizeMode="contain" />
+
+        <Text style={[styles.title, { color: mode === "light" ? "#0b2545" : "#fff" }]}>Crear cuenta</Text>
+        <Text style={[styles.subtitle, { color: mode === "light" ? "#5b6b8a" : "#a8b8c8" }]}>Únete y comienza a usar la app</Text>
+
+        <View style={styles.form}>
+          <TextInput
+            style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
+            placeholder="Usuario"
+            placeholderTextColor={mode === "light" ? "#999" : "#666"}
+            value={username}
+            onChangeText={setUsername}
+          />
+          <TextInput
+            style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
+            placeholder="Email"
+            placeholderTextColor={mode === "light" ? "#999" : "#666"}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
+            placeholder="Contraseña"
+            placeholderTextColor={mode === "light" ? "#999" : "#666"}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+>>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
 
           <TouchableOpacity style={styles.primaryButton} onPress={handleRegister} disabled={loading}>
             <Text style={styles.primaryButtonText}>{loading ? "Creando..." : "Crear cuenta"}</Text>
@@ -74,6 +130,7 @@ export default function RegisterScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   screen: { flex: 1, backgroundColor: "#f2f6ff" },
   container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 24 },
   logo: { width: 120, height: 120, marginBottom: 12 },
@@ -83,6 +140,30 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     backgroundColor: "#fff",
+=======
+  screen: { flex: 1 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  appName: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  themeButton: {
+    fontSize: 24,
+  },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 24 },
+  logo: { width: 120, height: 120, marginBottom: 12 },
+  title: { fontSize: 22, fontWeight: "700", marginBottom: 4 },
+  subtitle: { marginBottom: 16 },
+  form: { width: "100%", maxWidth: 380, alignItems: "center" },
+  input: {
+    width: "100%",
+>>>>>>> a65a77f759aeb9fd1774d649a1c1ebcf6310bc14
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderRadius: 10,
