@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
-import { useDispatch } from "react-redux";
-import { addHistory } from "../store/slices/historySlice";
-import { v4 as uuid } from "uuid";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/RootNavigator';
+import CustomButton from '../components/CustomButton';
+import CustomInput from '../components/CustomInput';
+import { Detection } from '../types/detection';
+import { v4 as uuidv4 } from 'uuid';
+import { useAppDispatch } from '../store/hooks';
+import { addDetection as addDetectionAction } from '../store/detectionsSlice';
 
 export default function ResultScreen({ route, navigation }: any) {
   const { imageUri, prediction } = route.params;
 
-  const [notes, setNotes] = useState("");
-  const dispatch = useDispatch();
+const ResultScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { imageUri, label, confidence } = route.params;
+  const dispatch = useAppDispatch();
+  const [notes, setNotes] = useState('');
+  const [error, setError] = useState<string | undefined>();
 
   const handleSave = () => {
     const payload = {
@@ -28,10 +28,9 @@ export default function ResultScreen({ route, navigation }: any) {
       date: new Date().toLocaleString(),
     };
 
-    dispatch(addHistory(payload));
-
-    Alert.alert("Guardado", "La detección se guardó en el historial.");
-    navigation.navigate("Tabs", { screen: "Historial" });
+    dispatch(addDetectionAction(detection));
+    Alert.alert('Guardado', 'La detección se guardó en el historial.');
+    navigation.navigate('Tabs');
   };
 
   return (
