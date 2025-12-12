@@ -1,18 +1,9 @@
-import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { useSelector } from "react-redux";
-import type { RootState } from "../store";
+import React from 'react';
+import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
+import { useAppSelector } from '../store/hooks';
 
-export default function HistoryScreen({ navigation }: any) {
-  const items = useSelector((state: RootState) => state.history.items);
-
+const HistoryScreen = () => {
+  const detections = useAppSelector(state => state.detections.items);
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Historial de detecciones</Text>

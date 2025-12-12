@@ -1,15 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit";
-import historyReducer from "./slices/historySlice";
-import uiReducer from "./slices/uiSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import detectionsReducer from './detectionsSlice';
+import uiReducer from './uiSlice';
 
 export const store = configureStore({
   reducer: {
-    history: historyReducer,
+    detections: detectionsReducer,
     ui: uiReducer,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-export default store;
