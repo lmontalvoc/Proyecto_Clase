@@ -1,171 +1,125 @@
-import React, { useRef, useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import { classifyImage } from "../utils/classifyImage";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
-export default function CameraScreen() {
-  const [permission, requestPermission] = useCameraPermissions();
-  const [flash, setFlash] = useState<"on" | "off">("off");
-  const [dots] = useState([
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-  ]);
+import { identifyImageWithOpenAI } from "../utils/openaiVisionService";
 
-  const cameraRef = useRef<CameraView>(null);
-  const navigation = useNavigation<any>();
+export default function CameraScreen({ navigation }: any) {
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!permission) requestPermission();
-  }, [permission]);
+  const takePhoto = async () => {
+    try {
+      // 1️⃣ Permisos de cámara
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          "Permiso requerido",
+          "Necesitas permitir acceso a la cámara."
+        );
+        return;
+      }
 
-  useEffect(() => {
-    dots.forEach((dot, index) => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(dot, {
-            toValue: 1,
-            duration: 700,
-            delay: index * 200,
-            useNativeDriver: true,
-          }),
-          Animated.timing(dot, {
-            toValue: 0,
-            duration: 700,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    });
-  }, []);
+      // 2️⃣ Tomar foto
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: false,
+        base64: true,
+        quality: 0.6,
+      });
 
-  const handleCapture = async () => {
-    if (!cameraRef.current) return;
+      if (result.canceled) return;
 
-    const photo = await cameraRef.current.takePictureAsync({
-      quality: 0.7,
-    });
+      const uri = result.assets[0].uri;
+      const base64 = result.assets[0].base64;
 
-    const result = await classifyImage(photo.uri);
+      if (!base64) {
+        Alert.alert("Error", "No se pudo obtener la imagen.");
+        return;
+      }
 
-    navigation.navigate("Result", {
-      imageUri: photo.uri,
-      label: result.label,
-      confidence: result.confidence,
-    });
+      setImageUri(uri);
+      setLoading(true);
 
-    setFlash("off");
+      // 3️⃣ OpenAI Vision (ÚNICO CEREBRO)
+      const prediction = await identifyImageWithOpenAI(base64);
+
+      console.log("🧠 OpenAI Vision:", prediction);
+
+      setLoading(false);
+
+      // 4️⃣ Navegar a ResultScreen
+      navigation.navigate("ResultScreen", {
+        imageUri: uri,
+        prediction,
+      });
+    } catch (error) {
+      setLoading(false);
+      console.log("❌ Error CameraScreen:", error);
+      Alert.alert("Error", "Ocurrió un problema procesando la imagen.");
+    }
   };
 
-  if (!permission?.granted) {
-    return (
-      <View style={styles.center}>
-        <Text>Necesitas dar permiso de cámara</Text>
-        <TouchableOpacity onPress={requestPermission}>
-          <Text>Dar permiso</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   return (
-    <View style={{ flex: 1 }}>
-      <CameraView
-        ref={cameraRef}
-        style={{ flex: 1 }}
-        facing="back"
-        flash={flash}
-      />
+    <View style={styles.container}>
+      <Text style={styles.title}>Tomá una foto</Text>
 
-      {/* Título estilo Amazon Lens */}
-      <View style={styles.header}>
-        <Text style={styles.title}>QEE AI</Text>
+      {imageUri && (
+        <Image source={{ uri: imageUri }} style={styles.preview} />
+      )}
 
-        <TouchableOpacity onPress={() => setFlash(flash === "off" ? "on" : "off")}>
-          <Text style={styles.flash}>{flash === "off" ? "⚡" : "✖️"}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Cuadro de enfoque */}
-      <View style={styles.frame} />
-
-      {/* Dots animados */}
-      {dots.map((dot, i) => (
-        <Animated.View
-          key={i}
-          style={[
-            styles.dot,
-            {
-              opacity: dot,
-              top: 300 + i * 30,
-            },
-          ]}
-        />
-      ))}
-
-      {/* Botón disparador */}
-      <View style={styles.captureContainer}>
-        <TouchableOpacity style={styles.captureBtn} onPress={handleCapture} />
-      </View>
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={takePhoto}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Analizando..." : "Abrir cámara"}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    position: "absolute",
-    top: 50,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    zIndex: 10,
-  },
-  title: {
-    color: "white",
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-  flash: {
-    color: "white",
-    fontSize: 28,
-  },
-  frame: {
-    position: "absolute",
-    top: 150,
-    left: 30,
-    right: 30,
-    bottom: 200,
-    borderWidth: 3,
-    borderColor: "white",
-    borderRadius: 20,
-  },
-  dot: {
-    position: "absolute",
-    left: "50%",
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: "white",
-  },
-  captureContainer: {
-    position: "absolute",
-    bottom: 40,
-    width: "100%",
-    alignItems: "center",
-  },
-  captureBtn: {
-    width: 85,
-    height: 85,
-    borderRadius: 50,
-    borderWidth: 6,
-    borderColor: "white",
-    backgroundColor: "white",
-  },
-  center: {
+  container: {
     flex: 1,
+    padding: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  preview: {
+    width: 260,
+    height: 260,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#ccc",
+  },
+  button: {
+    backgroundColor: "#222",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

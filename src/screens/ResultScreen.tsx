@@ -1,11 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useDispatch } from "react-redux";
 import { addHistory } from "../store/slices/historySlice";
 import { v4 as uuid } from "uuid";
 
 export default function ResultScreen({ route, navigation }: any) {
-  const { imageUri, label, confidence } = route.params;
+  const { imageUri, prediction } = route.params;
 
   const [notes, setNotes] = useState("");
   const dispatch = useDispatch();
@@ -14,13 +22,14 @@ export default function ResultScreen({ route, navigation }: any) {
     const payload = {
       id: uuid(),
       imageUri,
-      label,
-      confidence,
+      label: prediction,
+      confidence: null, // Clarifai no devuelve un valor usable
       notes,
       date: new Date().toLocaleString(),
     };
 
     dispatch(addHistory(payload));
+
     Alert.alert("Guardado", "La detección se guardó en el historial.");
     navigation.navigate("Tabs", { screen: "Historial" });
   };
@@ -29,8 +38,9 @@ export default function ResultScreen({ route, navigation }: any) {
     <View style={styles.container}>
       <Image source={{ uri: imageUri }} style={styles.image} />
 
-      <Text style={styles.label}>Objeto identificado: {label}</Text>
-      {/* <Text style={styles.conf}>Confianza: {confidence.toFixed(1)}%</Text> */}
+      <Text style={styles.label}>
+        Objeto identificado: {prediction || "No identificado"}
+      </Text>
 
       <TextInput
         placeholder="Notas (opcional)"
@@ -49,8 +59,7 @@ export default function ResultScreen({ route, navigation }: any) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   image: { width: "100%", height: 250, borderRadius: 12, marginBottom: 20 },
-  label: { fontSize: 20, fontWeight: "bold" },
-  conf: { marginBottom: 15 },
+  label: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",

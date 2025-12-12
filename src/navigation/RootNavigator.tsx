@@ -67,7 +67,7 @@ export default function RootNavigator() {
         {user ? (
           <>
             <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
-            <Stack.Screen name="Result" component={ResultScreen} />
+            <Stack.Screen name="ResultScreen" component={ResultScreen} />
             <Stack.Screen name="Apariencia" component={AppearanceScreen} />
           </>
         ) : (

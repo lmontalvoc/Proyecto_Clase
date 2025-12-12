@@ -4,8 +4,8 @@ interface HistoryItem {
   id: string;
   imageUri: string;
   label: string;
-  confidence: number;
-  notes: string;
+  confidence?: number | null; // ← AHORA SÍ PERMITE null
+  notes?: string;
   date: string;
 }
 
