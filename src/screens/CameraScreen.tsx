@@ -1,51 +1,19 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Alert,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { Camera, useCameraPermissions, CameraView } from 'expo-camera';
+import CustomButton from '../components/CustomButton';
+import { useNavigation } from '@react-navigation/native';
 
-import { identifyImageWithOpenAI } from "../utils/openaiVisionService";
-
-export default function CameraScreen({ navigation }: any) {
-  const [imageUri, setImageUri] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const takePhoto = async () => {
-    try {
-      // 1️⃣ Permisos de cámara
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-      if (!permission.granted) {
-        Alert.alert(
-          "Permiso requerido",
-          "Necesitas permitir acceso a la cámara."
-        );
-        return;
-      }
-
-      // 2️⃣ Tomar foto
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: false,
-        base64: true,
-        quality: 0.6,
-      });
-
-      if (result.canceled) return;
-
-      const uri = result.assets[0].uri;
-      const base64 = result.assets[0].base64;
-
-      if (!base64) {
-        Alert.alert("Error", "No se pudo obtener la imagen.");
-        return;
-      }
-
-      setImageUri(uri);
-      setLoading(true);
+async function fakeClassifyImage(uri: string): Promise<{ label: string; confidence: number }> {
+  // Simulación mientras conectamos ML Kit real
+  const labels = ['Perro', 'Gato', 'Planta', 'Persona', 'Objeto desconocido'];
+  const randomIndex = Math.floor(Math.random() * labels.length);
+  const confidence = 60 + Math.floor(Math.random() * 40);
+  return {
+    label: labels[randomIndex],
+    confidence,
+  };
+}
 
       // 3️⃣ OpenAI Vision (ÚNICO CEREBRO)
       const prediction = await identifyImageWithOpenAI(base64);
