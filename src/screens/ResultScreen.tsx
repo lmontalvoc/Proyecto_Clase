@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAppDispatch } from '../store/hooks';
 import { addDetection as addDetectionAction } from '../store/detectionsSlice';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Result'>;
+export default function ResultScreen({ route, navigation }: any) {
+  const { imageUri, prediction } = route.params;
 
 const ResultScreen: React.FC<Props> = ({ route, navigation }) => {
   const { imageUri, label, confidence } = route.params;
@@ -18,20 +19,13 @@ const ResultScreen: React.FC<Props> = ({ route, navigation }) => {
   const [error, setError] = useState<string | undefined>();
 
   const handleSave = () => {
-    if (!label) {
-      setError('No hay etiqueta para guardar.');
-      return;
-    }
-    setError(undefined);
-
-    const now = new Date();
-    const detection: Detection = {
-      id: uuidv4(),
-      label,
-      confidence,
-      createdAt: now.toLocaleString(),
+    const payload = {
+      id: uuid(),
       imageUri,
+      label: prediction,
+      confidence: null, // Clarifai no devuelve un valor usable
       notes,
+      date: new Date().toLocaleString(),
     };
 
     dispatch(addDetectionAction(detection));
@@ -42,41 +36,42 @@ const ResultScreen: React.FC<Props> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Image source={{ uri: imageUri }} style={styles.image} />
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.confidence}>{confidence}% de confianza</Text>
 
-      <CustomInput
-        label="Notas (opcional)"
-        placeholder="Ej: Perro que vimos en el parque"
+      <Text style={styles.label}>
+        Objeto identificado: {prediction || "No identificado"}
+      </Text>
+
+      <TextInput
+        placeholder="Notas (opcional)"
+        style={styles.input}
         value={notes}
         onChangeText={setNotes}
-        error={error}
       />
 
-      <CustomButton title="Guardar en historial" onPress={handleSave} />
+      <TouchableOpacity style={styles.btn} onPress={handleSave}>
+        <Text style={styles.btnTxt}>Guardar en historial</Text>
+      </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
+  container: { flex: 1, padding: 20 },
+  image: { width: "100%", height: 250, borderRadius: 12, marginBottom: 20 },
+  label: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    height: 70,
+    padding: 10,
+    marginBottom: 20,
   },
-  image: {
-    width: '100%',
-    height: 250,
+  btn: {
+    backgroundColor: "#222",
+    padding: 14,
     borderRadius: 12,
-    marginBottom: 16,
+    alignItems: "center",
   },
-  label: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  confidence: {
-    marginBottom: 16,
-  },
+  btnTxt: { color: "white", fontWeight: "bold" },
 });
-
-export default ResultScreen;

@@ -15,81 +15,79 @@ async function fakeClassifyImage(uri: string): Promise<{ label: string; confiden
   };
 }
 
-const CameraScreen = () => {
-  const [permission, requestPermission] = useCameraPermissions();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const cameraRef = useRef<CameraView | null>(null);
-  const navigation = useNavigation<any>();
+      // 3️⃣ OpenAI Vision (ÚNICO CEREBRO)
+      const prediction = await identifyImageWithOpenAI(base64);
 
-  useEffect(() => {
-    if (!permission) {
-      requestPermission();
+      console.log("🧠 OpenAI Vision:", prediction);
+
+      setLoading(false);
+
+      // 4️⃣ Navegar a ResultScreen
+      navigation.navigate("ResultScreen", {
+        imageUri: uri,
+        prediction,
+      });
+    } catch (error) {
+      setLoading(false);
+      console.log("❌ Error CameraScreen:", error);
+      Alert.alert("Error", "Ocurrió un problema procesando la imagen.");
     }
-  }, [permission]);
-
-  if (!permission) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  if (!permission.granted) {
-    return (
-      <View style={styles.center}>
-        <Text>Se necesita permiso de cámara.</Text>
-        <CustomButton title="Dar permiso" onPress={requestPermission} />
-      </View>
-    );
-  }
-
-  const handleCapture = async () => {
-    if (!cameraRef.current) return;
-    setIsProcessing(true);
-    const photo = await cameraRef.current.takePictureAsync({ quality: 0.7 });
-
-    const result = await fakeClassifyImage(photo.uri);
-
-    setIsProcessing(false);
-    navigation.navigate('Result', {
-      imageUri: photo.uri,
-      label: result.label,
-      confidence: result.confidence,
-    });
   };
 
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing="back" />
-      <View style={styles.bottomBar}>
-        {isProcessing ? (
-          <ActivityIndicator />
-        ) : (
-          <CustomButton title="Tomar foto" onPress={handleCapture} />
-        )}
-      </View>
+      <Text style={styles.title}>Tomá una foto</Text>
+
+      {imageUri && (
+        <Image source={{ uri: imageUri }} style={styles.preview} />
+      )}
+
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={takePhoto}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Analizando..." : "Abrir cámara"}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  camera: {
-    flex: 1,
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
-  bottomBar: {
-    padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+  preview: {
+    width: 260,
+    height: 260,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#ccc",
   },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  button: {
+    backgroundColor: "#222",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
-
-export default CameraScreen;
