@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { auth, db } from '../firebase/firebaseConfig';
 import { collection, query, orderBy, onSnapshot, DocumentData } from 'firebase/firestore';
 
@@ -17,15 +25,20 @@ const HistoryScreen = ({ navigation }: any) => {
 
     const ref = collection(db, 'users', user.uid, 'history');
     const q = query(ref, orderBy('createdAt', 'desc'));
-    const unsub = onSnapshot(q, (snap) => {
-      const arr: any[] = [];
-      snap.forEach((d) => arr.push({ id: d.id, ...d.data() }));
-      setItems(arr);
-      setLoading(false);
-    }, (e) => {
-      console.log('History snapshot error', e);
-      setLoading(false);
-    });
+
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const arr: any[] = [];
+        snap.forEach((d) => arr.push({ id: d.id, ...d.data() }));
+        setItems(arr);
+        setLoading(false);
+      },
+      (e) => {
+        console.log('History snapshot error', e);
+        setLoading(false);
+      }
+    );
 
     return () => unsub();
   }, []);
@@ -55,16 +68,20 @@ const HistoryScreen = ({ navigation }: any) => {
               style={styles.card}
               onPress={() =>
                 navigation.navigate('ResultScreen', {
-                  imageUri: `data:image/jpeg;base64,${item.imageBase64}`,
+                  imageUri: item.imageUrl,
                   prediction: item.label,
                 })
               }
             >
-              <Image source={{ uri: `data:image/jpeg;base64,${item.imageBase64}` }} style={styles.thumb} />
+              <Image source={{ uri: item.imageUrl }} style={styles.thumb} />
 
               <View style={{ flex: 1 }}>
                 <Text style={styles.label}>{item.label}</Text>
-                <Text style={styles.date}>{item.createdAt?.toDate ? item.createdAt.toDate().toLocaleString() : ''}</Text>
+                <Text style={styles.date}>
+                  {item.createdAt?.toDate
+                    ? item.createdAt.toDate().toLocaleString()
+                    : ''}
+                </Text>
               </View>
             </TouchableOpacity>
           )}
@@ -80,7 +97,14 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyBox: { alignItems: 'center', marginTop: 40 },
   emptyText: { fontSize: 16, color: '#666', fontStyle: 'italic' },
-  card: { flexDirection: 'row', backgroundColor: '#f4f4f6', padding: 12, borderRadius: 12, marginBottom: 15, alignItems: 'center' },
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#f4f4f6',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
   thumb: { width: 90, height: 90, borderRadius: 8, marginRight: 12 },
   label: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
   date: { opacity: 0.6, fontSize: 12, marginBottom: 6 },

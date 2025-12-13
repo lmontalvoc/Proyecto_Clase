@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import CustomButton from '../components/CustomButton';
-import * as FileSystem from 'expo-file-system/legacy';
 import { auth, db } from '../firebase/firebaseConfig';
 import {
   collection,
@@ -13,10 +12,12 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
+import { ThemeContext } from '../theme/ThemeContext';
 
 export default function ResultScreen({ route, navigation }: any) {
   const { imageUri, prediction } = route.params || {};
   const [saved, setSaved] = useState(false);
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     let mounted = true;
@@ -26,23 +27,21 @@ export default function ResultScreen({ route, navigation }: any) {
         const user = auth.currentUser;
         if (!user || !imageUri || saved) return;
 
-        // Read file as base64 and store in Firestore under users/{uid}/history
-        const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: 'base64' as any });
+        const refCol = collection(db, 'users', user.uid, 'history');
 
-        const ref = collection(db, 'users', user.uid, 'history');
-        await addDoc(ref, {
+        await addDoc(refCol, {
           label: prediction || 'No identificado',
-          imageBase64: base64,
+          imageUrl: imageUri,
           createdAt: serverTimestamp(),
         });
 
-        // Enforce max 5 items: delete oldest if more than 5
-        const q = query(ref, orderBy('createdAt', 'asc'));
+        const q = query(refCol, orderBy('createdAt', 'asc'));
         const snap = await getDocs(q);
+
         if (snap.size > 5) {
           const toDelete = snap.docs.slice(0, snap.size - 5);
           for (const d of toDelete) {
-            await deleteDoc(doc(ref, d.id));
+            await deleteDoc(doc(refCol, d.id));
           }
         }
 
@@ -60,11 +59,13 @@ export default function ResultScreen({ route, navigation }: any) {
   }, [imageUri, prediction, saved]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {imageUri ? <Image source={{ uri: imageUri }} style={styles.image} /> : null}
 
-      <Text style={styles.label}>Objeto identificado:</Text>
-      <Text style={styles.prediction}>{prediction || 'No identificado'}</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Objeto identificado:</Text>
+      <Text style={[styles.prediction, { color: theme.text }]}>
+        {prediction || 'No identificado'}
+      </Text>
 
       <CustomButton title="Volver" onPress={() => navigation.goBack()} />
     </View>

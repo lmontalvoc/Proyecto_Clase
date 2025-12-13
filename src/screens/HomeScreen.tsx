@@ -46,8 +46,6 @@ export default function HomeScreen() {
         <Text style={[styles.step, { color: theme.text }]}>• Ve a la pestaña Cámara.</Text>
         <Text style={[styles.step, { color: theme.text }]}>• Apunta al objeto que quieras identificar.</Text>
         <Text style={[styles.step, { color: theme.text }]}>• Recibirás el resultado al instante gracias a IA.</Text>
-
-        <Text style={[styles.note, { color: theme.text }]}>Las fotos no se guardan en el historial; sólo se usan temporalmente para la detección.</Text>
       </View>
 
       {userData && (

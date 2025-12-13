@@ -1,29 +1,22 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-// Replace the values below with your Firebase project's config.
-// You can find these in the Firebase Console -> Project settings.
 const firebaseConfig = {
-apiKey: "AIzaSyCmFJLURMmcdkYAaALe3VerUweU7rZhzHA",
+  apiKey: "AIzaSyCmFJLURMmcdkYAaALe3VerUweU7rZhzHA",
   authDomain: "que-es-esto-481d4.firebaseapp.com",
   projectId: "que-es-esto-481d4",
-  storageBucket: "que-es-esto-481d4.firebasestorage.app",
+
+  // ✅ ESTE ES EL FIX REAL
+  storageBucket: "que-es-esto-481d4.appspot.com",
+
   messagingSenderId: "582590320768",
-  appId: "1:582590320768:web:9274ea7d3ce99c0f0ed665"
+  appId: "1:582590320768:web:9274ea7d3ce99c0f0ed665",
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Inicializar Auth con persistencia usando AsyncStorage para que
-// el estado de autenticación persista entre sesiones.
-// Use getAuth without AsyncStorage so auth state does NOT persist between full app restarts.
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-
-// Notes:
-// - Replace the placeholder strings above with your real Firebase config.
-// - In an Expo-managed app you may also need to add the iOS/Android
-//   native config files (GoogleService-Info.plist / google-services.json)
-//   if you use some native Firebase SDK features. For web-style usage
-//   (Auth + Firestore over JS SDK) the above is usually sufficient.
+export const storage = getStorage(app);

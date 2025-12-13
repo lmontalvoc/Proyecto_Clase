@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  ActivityIndicator,
   TouchableOpacity,
   Image,
   Alert,
@@ -11,14 +10,9 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { identifyImageWithOpenAI } from '../utils/openaiVisionService';
+import { uploadImageWithDescription } from '../utils/uploadImageWithDescription';
 import { useNavigation } from '@react-navigation/native';
 import { ThemeContext } from '../theme/ThemeContext';
-
-async function fakeClassifyImage(uri: string): Promise<string> {
-  const labels = ['Perro', 'Gato', 'Planta', 'Persona', 'Objeto desconocido'];
-  const randomIndex = Math.floor(Math.random() * labels.length);
-  return labels[randomIndex];
-}
 
 export default function CameraScreen() {
   const navigation = useNavigation<any>();
@@ -26,11 +20,9 @@ export default function CameraScreen() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const { theme } = useContext(ThemeContext);
 
-  useEffect(() => {
-    // no-op: permissions requested on demand by ImagePicker
-  }, []);
-
   const takePhoto = async () => {
+    setLoading(true);
+
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
@@ -38,41 +30,70 @@ export default function CameraScreen() {
         return;
       }
 
-      setLoading(true);
       const result = await ImagePicker.launchCameraAsync({ quality: 0.6 });
-      setLoading(false);
 
-      const uri = (result as any).uri || ((result as any).assets && (result as any).assets[0]?.uri);
+      const uri =
+        (result as any).uri ||
+        ((result as any).assets && (result as any).assets[0]?.uri);
+
       if (!uri) return;
 
       setPhotoUri(uri);
 
-      // Leer la imagen como base64 y enviar a OpenAI Vision
-      setLoading(true);
-      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' as any });
-      const prediction = await identifyImageWithOpenAI(base64);
-      setLoading(false);
+      // Leer imagen en base64
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: 'base64' as any,
+      });
 
-      navigation.navigate('ResultScreen', { imageUri: uri, prediction });
+      // 🔍 RECONOCIMIENTO (puede tardar / timeout)
+      let prediction = 'No se pudo identificar';
+      try {
+        prediction = await identifyImageWithOpenAI(base64);
+      } catch {
+        prediction = 'No se pudo identificar';
+      }
+
+      // 👉 NAVEGAR INMEDIATO (NUNCA BLOQUEAR UI)
+      navigation.navigate('ResultScreen', {
+        imageUri: uri,
+        prediction,
+      });
+
+      // ☁️ FIREBASE EN BACKGROUND (NO await)
+      uploadImageWithDescription({
+        uri,
+        description: prediction,
+      }).catch(() => {
+        // Silencioso: no afecta la experiencia
+      });
+
     } catch (error) {
-      setLoading(false);
       console.log('❌ Error CameraScreen:', error);
       Alert.alert('Error', 'Ocurrió un problema procesando la imagen.');
+    } finally {
+      // 🔓 SIEMPRE desbloquea la UI
+      setLoading(false);
     }
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}> 
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Text style={[styles.title, { color: theme.text }]}>Tomá una foto</Text>
 
       {photoUri && <Image source={{ uri: photoUri }} style={styles.preview} />}
 
       <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        style={[
+          styles.button,
+          loading && styles.buttonDisabled,
+          { backgroundColor: theme.button },
+        ]}
         onPress={takePhoto}
         disabled={loading}
       >
-        <Text style={[styles.buttonText, { color: theme.buttonText }]}> {loading ? 'Abrir cámara...' : 'Abrir cámara'}</Text>
+        <Text style={[styles.buttonText, { color: theme.buttonText }]}>
+          {loading ? 'Procesando...' : 'Abrir cámara'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -85,17 +106,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
-  cameraWrapper: {
-    width: 320,
-    height: 240,
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 12,
-  },
-  camera: { flex: 1 },
-  cameraPlaceholder: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#eee' },
   preview: {
     width: 260,
     height: 260,

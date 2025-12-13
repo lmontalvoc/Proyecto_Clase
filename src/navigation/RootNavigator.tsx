@@ -35,14 +35,18 @@ function Tabs() {
         tabBarInactiveTintColor: theme.text,
         tabBarStyle: { backgroundColor: theme.card },
         tabBarIcon: ({ color, size }) => {
-          if (route.name === 'Inicio') {
-            return <Ionicons name="home" size={size} color={color} />;
-          }
-          if (route.name === 'Cámara') {
-            return <Ionicons name="camera" size={size} color={color} />;
-          }
-          return null;
-        },
+  if (route.name === 'Inicio') {
+    return <Ionicons name="home" size={size} color={color} />;
+     }
+     if (route.name === 'Historial') {
+    return <Ionicons name="time" size={size} color={color} />;
+     }
+    if (route.name === 'Cámara') {
+      return <Ionicons name="camera" size={size} color={color} />;
+    }
+    return null;
+    },
+ 
       })}
     >
       <Tab.Screen name="Inicio" component={HomeScreen} />
