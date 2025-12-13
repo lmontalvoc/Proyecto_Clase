@@ -46,6 +46,7 @@ function Tabs() {
       })}
     >
       <Tab.Screen name="Inicio" component={HomeScreen} />
+      <Tab.Screen name="Historial" component={require('../screens/HistoryScreen').default} />
       <Tab.Screen name="Cámara" component={CameraScreen} />
     </Tab.Navigator>
   );
