@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TextInput, StyleSheet, TextInputProps, View, Text } from 'react-native';
+import { ThemeContext } from '../theme/ThemeContext';
 
 interface Props extends TextInputProps {
   label?: string;
@@ -7,11 +8,17 @@ interface Props extends TextInputProps {
 }
 
 const CustomInput: React.FC<Props> = ({ label, error, ...rest }) => {
+  const { theme } = useContext(ThemeContext);
+
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      <TextInput style={styles.input} {...rest} />
-      {error && <Text style={styles.error}>{error}</Text>}
+      {label && <Text style={[styles.label, { color: theme.text }]}>{label}</Text>}
+      <TextInput
+        style={[styles.input, { backgroundColor: theme.card, color: theme.text, borderColor: theme.text + '20' }]}
+        placeholderTextColor={theme.text === '#000' ? '#999' : '#888'}
+        {...rest}
+      />
+      {error && <Text style={[styles.error, { color: '#ff6666' }]}>{error}</Text>}
     </View>
   );
 };
