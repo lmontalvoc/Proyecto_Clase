@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   TextInput,
@@ -13,6 +13,7 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "../navigation/types";
+import { ThemeContext } from "../theme/ThemeContext";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "ResetPassword">;
 
@@ -20,6 +21,7 @@ export default function ResetPasswordScreen({ navigation }: Props) {
   const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const { theme } = useContext(ThemeContext);
 
   const handleResetPassword = async (): Promise<void> => {
     if (!email.trim()) {
@@ -50,12 +52,12 @@ export default function ResetPasswordScreen({ navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.screen}
+      style={[styles.screen, { backgroundColor: theme.background }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>Restablecer contraseña</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: theme.text }]}>Restablecer contraseña</Text>
+        <Text style={[styles.subtitle, { color: theme.text }]}> 
           {sent
             ? "Se envió un enlace a tu correo. Revisa tu bandeja de entrada."
             : "Ingresa tu correo electrónico para recibir un enlace de restablecimiento"}
@@ -64,8 +66,9 @@ export default function ResetPasswordScreen({ navigation }: Props) {
         {!sent ? (
           <View style={styles.form}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.card, color: theme.text }]}
               placeholder="Correo electrónico"
+              placeholderTextColor={theme.text === "#000" ? "#999" : "#888"}
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
@@ -74,11 +77,11 @@ export default function ResetPasswordScreen({ navigation }: Props) {
             />
 
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={[styles.primaryButton, { backgroundColor: theme.button }]}
               onPress={handleResetPassword}
               disabled={loading}
             >
-              <Text style={styles.primaryButtonText}>
+              <Text style={[styles.primaryButtonText, { color: theme.buttonText }]}> 
                 {loading ? "Enviando..." : "Enviar enlace"}
               </Text>
             </TouchableOpacity>
@@ -92,7 +95,7 @@ export default function ResetPasswordScreen({ navigation }: Props) {
         )}
 
         <TouchableOpacity style={styles.ghostButton} onPress={handleBackToLogin}>
-          <Text style={styles.ghostButtonText}>Volver a Iniciar sesión</Text>
+          <Text style={[styles.ghostButtonText, { color: theme.button } ]}>Volver a Iniciar sesión</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

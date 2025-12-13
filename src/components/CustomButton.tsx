@@ -1,32 +1,7 @@
-<<<<<<< HEAD
-import React from "react";
-import { TouchableOpacity, Text } from "react-native";
-
-type Props = {
-  title: string;
-  onPress: () => void;
-};
-
-export default function CustomButton({ title, onPress }: Props) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={{
-        backgroundColor: "#1E88E5",
-        padding: 12,
-        borderRadius: 8,
-        marginVertical: 8,
-      }}
-    >
-      <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>
-        {title}
-      </Text>
-    </TouchableOpacity>
-  );
-}
-=======
-import React from 'react';
+>>>>>>> development
+import React, { useContext } from 'react';
 import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent } from 'react-native';
+import { ThemeContext } from '../theme/ThemeContext';
 
 interface Props {
   title: string;
@@ -34,9 +9,11 @@ interface Props {
 }
 
 const CustomButton: React.FC<Props> = ({ title, onPress }) => {
+  const { theme } = useContext(ThemeContext);
+
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>{title}</Text>
+    <TouchableOpacity style={[styles.button, { backgroundColor: theme.button }]} onPress={onPress}>
+      <Text style={[styles.text, { color: theme.buttonText }]}>{title}</Text>
     </TouchableOpacity>
   );
 };
@@ -57,4 +34,3 @@ const styles = StyleSheet.create({
 });
 
 export default CustomButton;
->>>>>>> development

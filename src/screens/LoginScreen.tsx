@@ -23,7 +23,7 @@ export default function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const { mode, setMode } = useContext(ThemeContext);
+  const { mode, setMode, theme } = useContext(ThemeContext);
 
   const handleLogin = async (): Promise<void> => {
     setLoading(true);
@@ -38,11 +38,11 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.screen, { backgroundColor: mode === "light" ? "#f2f6ff" : "#0f1419" }]}
+      style={[styles.screen, { backgroundColor: theme.background }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={styles.header}>
-        <Text style={[styles.appName, { color: mode === "light" ? "#0b2545" : "#fff" }]}>¿Qué Es Esto?</Text>
+        <Text style={[styles.appName, { color: theme.text }]}>¿Qué Es Esto?</Text>
         <TouchableOpacity onPress={() => setMode(mode === "light" ? "dark" : "light")}>
           <Text style={styles.themeButton}>{mode === "light" ? "🌙" : "☀️"}</Text>
         </TouchableOpacity>
@@ -51,38 +51,38 @@ export default function LoginScreen({ navigation }: Props) {
       <View style={styles.container}>
         <Image source={logo} style={styles.logo} resizeMode="contain" />
 
-        <Text style={[styles.title, { color: mode === "light" ? "#0b2545" : "#fff" }]}>Bienvenido</Text>
-        <Text style={[styles.subtitle, { color: mode === "light" ? "#5b6b8a" : "#a8b8c8" }]}>Inicia sesión para continuar</Text>
+        <Text style={[styles.title, { color: theme.text }]}>Bienvenido</Text>
+        <Text style={[styles.subtitle, { color: theme.text }]}>Inicia sesión para continuar</Text>
 
         <View style={styles.form}>
           <TextInput
-            style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
+            style={[styles.input, { backgroundColor: theme.card, color: theme.text }]}
             placeholder="Email"
-            placeholderTextColor={mode === "light" ? "#999" : "#666"}
+            placeholderTextColor={theme.text === "#000" ? "#999" : "#888"}
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
           />
           <TextInput
-            style={[styles.input, { backgroundColor: mode === "light" ? "#fff" : "#1e2329", color: mode === "light" ? "#000" : "#fff" }]}
+            style={[styles.input, { backgroundColor: theme.card, color: theme.text }]}
             placeholder="Contraseña"
-            placeholderTextColor={mode === "light" ? "#999" : "#666"}
+            placeholderTextColor={theme.text === "#000" ? "#999" : "#888"}
             secureTextEntry
             value={password}
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
-            <Text style={styles.primaryButtonText}>{loading ? "Ingresando..." : "Iniciar sesión"}</Text>
+          <TouchableOpacity style={[styles.primaryButton, { backgroundColor: theme.button }]} onPress={handleLogin} disabled={loading}>
+            <Text style={[styles.primaryButtonText, { color: theme.buttonText }]}>{loading ? "Ingresando..." : "Iniciar sesión"}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate("ResetPassword")}>
-            <Text style={[styles.forgotButtonText, { color: mode === "light" ? "#999" : "#888" }]}>¿Olvidaste tu contraseña?</Text>
+            <Text style={[styles.forgotButtonText, { color: theme.text }]}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.ghostButton} onPress={() => navigation.navigate("Register")}>
-            <Text style={styles.ghostButtonText}>Crear cuenta</Text>
+            <Text style={[styles.ghostButtonText, { color: theme.button }]}>Crear cuenta</Text>
           </TouchableOpacity>
         </View>
       </View>

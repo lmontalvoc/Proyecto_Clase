@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { View, Text, Switch } from "react-native";
+import { ThemeContext } from "../theme/ThemeContext";
 
 export default function SettingsScreen() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, mode, setMode } = useContext(ThemeContext);
 
   return (
     <View
       style={{
         flex: 1,
         padding: 20,
-        backgroundColor: darkMode ? "#222" : "#fff",
+        backgroundColor: theme.background,
       }}
     >
-      <Text style={{ color: darkMode ? "#fff" : "#000" }}>Modo oscuro</Text>
+      <Text style={{ color: theme.text, marginBottom: 10 }}>Modo oscuro</Text>
 
       <Switch
-        value={darkMode}
-        onValueChange={() => setDarkMode(!darkMode)}
+        value={mode === "dark"}
+        onValueChange={() => setMode(mode === "light" ? "dark" : "light")}
       />
     </View>
   );

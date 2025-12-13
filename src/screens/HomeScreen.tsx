@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { View, Text, ActivityIndicator, Image, StyleSheet } from "react-native";
+import { ThemeContext } from "../theme/ThemeContext";
 import { auth, db } from "../firebase/firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
 
@@ -13,6 +14,7 @@ const logo = require("../assets/logo.png");
 export default function HomeScreen() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -43,29 +45,29 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-        <Text style={styles.loadingText}>Cargando datos...</Text>
+      <View style={[styles.center, { backgroundColor: theme.background }]}> 
+        <ActivityIndicator size="large" color={theme.text} />
+        <Text style={[styles.loadingText, { color: theme.text }]}>Cargando datos...</Text>
       </View>
     );
   }
 
   if (!userData) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.notFound}>No hay datos del usuario</Text>
+      <View style={[styles.center, { backgroundColor: theme.background }]}>
+        <Text style={[styles.notFound, { color: theme.text }]}>No hay datos del usuario</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.card}>
+    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+      <View style={[styles.card, { backgroundColor: theme.card }]}> 
         <Image source={logo} style={styles.logo} resizeMode="contain" />
-        <Text style={styles.appName}>¿Qué Es Esto?</Text>
-        <Text style={styles.welcome}>Bienvenido 👋</Text>
-        <Text style={styles.info}>Email: {userData.email}</Text>
-        <Text style={styles.info}>Usuario: {userData.username}</Text>
+        <Text style={[styles.appName, { color: theme.text }]}>¿Qué Es Esto?</Text>
+        <Text style={[styles.welcome, { color: theme.text }]}>Bienvenido 👋</Text>
+        <Text style={[styles.info, { color: theme.text }]}>Email: {userData.email}</Text>
+        <Text style={[styles.info, { color: theme.text }]}>Usuario: {userData.username}</Text>
       </View>
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -11,12 +11,14 @@ import {
 import { useDispatch } from "react-redux";
 import { addHistory } from "../store/slices/historySlice";
 import { v4 as uuid } from "uuid";
+import { ThemeContext } from "../theme/ThemeContext";
 
 export default function ResultScreen({ route, navigation }: any) {
   const { imageUri, prediction } = route.params;
 
   const [notes, setNotes] = useState("");
   const dispatch = useDispatch();
+  const { theme } = useContext(ThemeContext);
 
   const handleSave = () => {
     const payload = {
@@ -35,22 +37,23 @@ export default function ResultScreen({ route, navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }] }>
       <Image source={{ uri: imageUri }} style={styles.image} />
 
-      <Text style={styles.label}>
+      <Text style={[styles.label, { color: theme.text }]}>
         Objeto identificado: {prediction || "No identificado"}
       </Text>
 
       <TextInput
         placeholder="Notas (opcional)"
-        style={styles.input}
+        placeholderTextColor={theme.text === "#000" ? "#666" : "#999"}
+        style={[styles.input, { backgroundColor: theme.card, color: theme.text }]}
         value={notes}
         onChangeText={setNotes}
       />
 
-      <TouchableOpacity style={styles.btn} onPress={handleSave}>
-        <Text style={styles.btnTxt}>Guardar en historial</Text>
+      <TouchableOpacity style={[styles.btn, { backgroundColor: theme.button }]} onPress={handleSave}>
+        <Text style={[styles.btnTxt, { color: theme.buttonText }]}>Guardar en historial</Text>
       </TouchableOpacity>
     </View>
   );
@@ -69,10 +72,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   btn: {
-    backgroundColor: "#222",
     padding: 14,
     borderRadius: 12,
     alignItems: "center",
   },
-  btnTxt: { color: "white", fontWeight: "bold" },
+  btnTxt: { fontWeight: "bold" },
 });

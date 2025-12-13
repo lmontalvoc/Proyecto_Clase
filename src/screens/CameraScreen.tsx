@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,12 @@ import {
 import * as ImagePicker from "expo-image-picker";
 
 import { identifyImageWithOpenAI } from "../utils/openaiVisionService";
+import { ThemeContext } from "../theme/ThemeContext";
 
 export default function CameraScreen({ navigation }: any) {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { theme } = useContext(ThemeContext);
 
   const takePhoto = async () => {
     try {
@@ -67,19 +69,19 @@ export default function CameraScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tomá una foto</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}> 
+      <Text style={[styles.title, { color: theme.text }]}>Tomá una foto</Text>
 
       {imageUri && (
         <Image source={{ uri: imageUri }} style={styles.preview} />
       )}
 
       <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
+        style={[styles.button, loading && styles.buttonDisabled, { backgroundColor: theme.button }]}
         onPress={takePhoto}
         disabled={loading}
       >
-        <Text style={styles.buttonText}>
+        <Text style={[styles.buttonText, { color: theme.buttonText }]}> 
           {loading ? "Analizando..." : "Abrir cámara"}
         </Text>
       </TouchableOpacity>
