@@ -8,7 +8,7 @@ import HomeScreen from "../screens/HomeScreen";
 import CameraScreen from "../screens/CameraScreen";
 import HistoryScreen from "../screens/HistoryScreen";
 import ResultScreen from "../screens/ResultScreen";
-import AppearanceScreen from "../screens/AppearanceScreen";
+import SettingsScreen from "../screens/SettingsScreeen";
 import RegisterScreen from "../screens/RegisterScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
@@ -68,7 +68,7 @@ export default function RootNavigator() {
           <>
             <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
             <Stack.Screen name="ResultScreen" component={ResultScreen} />
-            <Stack.Screen name="Apariencia" component={AppearanceScreen} />
+            <Stack.Screen name="Apariencia" component={SettingsScreen} />
           </>
         ) : (
           <Stack.Screen name="Auth" component={AuthStack} options={{ headerShown: false }} />
