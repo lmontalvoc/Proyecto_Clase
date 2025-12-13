@@ -27,9 +27,9 @@ export async function identifyImageWithOpenAI(base64Image: string) {
                   type: "input_text",
                   text:
                     "Identifica el objeto principal de la imagen. " +
-                    "Responde en español. " +
-                    "Sé específico solo si estás seguro. " +
-                    "Si no puedes identificarlo, di exactamente: 'Objeto no identificado'.",
+                    "Responde en español con un nombre corto y claro. " +
+                    "Sé específico solo si estás seguro (marca/modelo si aplica). " +
+                    "Si no puedes identificarlo, responde EXACTAMENTE: Objeto no identificado.",
                 },
                 {
                   type: "input_image",
@@ -38,6 +38,7 @@ export async function identifyImageWithOpenAI(base64Image: string) {
               ],
             },
           ],
+          max_output_tokens: 50,
         }),
       }
     );
@@ -46,14 +47,16 @@ export async function identifyImageWithOpenAI(base64Image: string) {
 
     console.log("🔍 OpenAI RAW:", JSON.stringify(data, null, 2));
 
-    const output =
-      data?.output_text ??
-      data?.output?.[0]?.content?.[0]?.text ??
-      "Objeto no identificado";
+    const text =
+      data?.output?.[0]?.content
+        ?.filter((c: any) => c.type === "output_text")
+        ?.map((c: any) => c.text)
+        ?.join(" ")
+        ?.trim() || "Objeto no identificado";
 
-    return output.trim();
+    return text;
   } catch (error) {
     console.log("❌ Error OpenAI Vision:", error);
-    return "Error al analizar la imagen.";
+    return "Objeto no identificado";
   }
 }

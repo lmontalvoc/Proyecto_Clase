@@ -59,14 +59,16 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.card}>
-        <Image source={logo} style={styles.logo} resizeMode="contain" />
-        <Text style={styles.appName}>¿Qué Es Esto?</Text>
-        <Text style={styles.welcome}>Bienvenido 👋</Text>
-        <Text style={styles.info}>Email: {userData.email}</Text>
-        <Text style={styles.info}>Usuario: {userData.username}</Text>
-      </View>
+    <View style={styles.container}>
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <Text style={styles.title}>¿Qué es Esto?</Text>
+      <Text style={styles.subtitle}>
+        Apunta la cámara a un objeto y deja que la app intente identificarlo.
+      </Text>
+      <CustomButton
+        title="Abrir Cámara"
+        onPress={() => navigation.navigate('Cámara')}
+      />
     </View>
   );
 }
