@@ -1,77 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Alert } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/RootNavigator';
+import React from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import CustomButton from '../components/CustomButton';
-import CustomInput from '../components/CustomInput';
-import { Detection } from '../types/detection';
-import { v4 as uuidv4 } from 'uuid';
-import { useAppDispatch } from '../store/hooks';
-import { addDetection as addDetectionAction } from '../store/detectionsSlice';
 
 export default function ResultScreen({ route, navigation }: any) {
   const { imageUri, prediction } = route.params;
 
-const ResultScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { imageUri, label, confidence } = route.params;
-  const dispatch = useAppDispatch();
-  const [notes, setNotes] = useState('');
-  const [error, setError] = useState<string | undefined>();
-
-  const handleSave = () => {
-    const payload = {
-      id: uuid(),
-      imageUri,
-      label: prediction,
-      confidence: null, // Clarifai no devuelve un valor usable
-      notes,
-      date: new Date().toLocaleString(),
-    };
-
-    dispatch(addDetectionAction(detection));
-    Alert.alert('Guardado', 'La detección se guardó en el historial.');
-    navigation.navigate('Tabs');
-  };
-
   return (
     <View style={styles.container}>
-      <Image source={{ uri: imageUri }} style={styles.image} />
+      {imageUri ? <Image source={{ uri: imageUri }} style={styles.image} /> : null}
 
-      <Text style={styles.label}>
-        Objeto identificado: {prediction || "No identificado"}
-      </Text>
+      <Text style={styles.label}>Objeto identificado:</Text>
+      <Text style={styles.prediction}>{prediction || 'No identificado'}</Text>
 
-      <TextInput
-        placeholder="Notas (opcional)"
-        style={styles.input}
-        value={notes}
-        onChangeText={setNotes}
-      />
-
-      <TouchableOpacity style={styles.btn} onPress={handleSave}>
-        <Text style={styles.btnTxt}>Guardar en historial</Text>
-      </TouchableOpacity>
+      <CustomButton title="Volver" onPress={() => navigation.goBack()} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  image: { width: "100%", height: 250, borderRadius: 12, marginBottom: 20 },
-  label: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    height: 70,
-    padding: 10,
-    marginBottom: 20,
-  },
-  btn: {
-    backgroundColor: "#222",
-    padding: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  btnTxt: { color: "white", fontWeight: "bold" },
+  container: { flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' },
+  image: { width: '90%', height: 300, borderRadius: 12, marginBottom: 24 },
+  label: { fontSize: 18, fontWeight: '600', marginBottom: 8 },
+  prediction: { fontSize: 20, fontWeight: '800', textAlign: 'center', marginBottom: 18 },
 });

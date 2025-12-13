@@ -43,6 +43,12 @@ export async function identifyImageWithOpenAI(base64Image: string) {
       }
     );
 
+    if (!response.ok) {
+      const errText = await response.text();
+      console.log("❌ OpenAI API error:", response.status, errText);
+      return "Objeto no identificado";
+    }
+
     const data = await response.json();
 
     console.log("🔍 OpenAI RAW:", JSON.stringify(data, null, 2));

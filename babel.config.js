@@ -4,8 +4,8 @@ module.exports = function (api) {
   return {
     presets: ["babel-preset-expo"],
     plugins: [
-      // Recomendado para Reanimated. Si no lo usas, igual no estorba.
-      "react-native-reanimated/plugin",
+      // Si usás react-native-reanimated instalalo y descomentá la línea siguiente:
+      // "react-native-reanimated/plugin",
     ],
   };
 };
