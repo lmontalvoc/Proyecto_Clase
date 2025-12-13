@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -6,7 +6,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import HomeScreen from "../screens/HomeScreen";
 import CameraScreen from "../screens/CameraScreen";
-import HistoryScreen from "../screens/HistoryScreen";
 import ResultScreen from "../screens/ResultScreen";
 import AppearanceScreen from "../screens/AppearanceScreen";
 import RegisterScreen from "../screens/RegisterScreen";
@@ -15,16 +14,44 @@ import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { ThemeContext } from "../theme/ThemeContext";
+import ThemeToggle from "../components/ThemeToggle";
 
+import { Ionicons } from '@expo/vector-icons';
+import LogoutButton from '../components/LogoutButton';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function Tabs() {
+  const { theme } = useContext(ThemeContext);
+
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      initialRouteName="Inicio"
+      screenOptions={({ route }) => ({
+        headerLeft: () => <LogoutButton />,
+        headerRight: () => <ThemeToggle />,
+        tabBarActiveTintColor: theme.button,
+        tabBarInactiveTintColor: theme.text,
+        tabBarStyle: { backgroundColor: theme.card },
+        tabBarIcon: ({ color, size }) => {
+  if (route.name === 'Inicio') {
+    return <Ionicons name="home" size={size} color={color} />;
+     }
+     if (route.name === 'Historial') {
+    return <Ionicons name="time" size={size} color={color} />;
+     }
+    if (route.name === 'Cámara') {
+      return <Ionicons name="camera" size={size} color={color} />;
+    }
+    return null;
+    },
+ 
+      })}
+    >
       <Tab.Screen name="Inicio" component={HomeScreen} />
+      <Tab.Screen name="Historial" component={require('../screens/HistoryScreen').default} />
       <Tab.Screen name="Cámara" component={CameraScreen} />
-      <Tab.Screen name="Historial" component={HistoryScreen} />
     </Tab.Navigator>
   );
 }
@@ -42,6 +69,7 @@ function AuthStack() {
 export default function RootNavigator() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const { theme, mode } = useContext(ThemeContext);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -61,9 +89,27 @@ export default function RootNavigator() {
     );
   }
 
+  const navTheme: any = {
+    dark: mode === "dark",
+    colors: {
+      background: theme.background,
+      card: theme.card,
+      text: theme.text,
+      primary: theme.button,
+      border: theme.card,
+    },
+    fonts: {
+      // react-navigation native-stack expects a `fonts` object; provide safe defaults
+      regular: { fontFamily: '' },
+      medium: { fontFamily: '' },
+      light: { fontFamily: '' },
+      thin: { fontFamily: '' },
+    },
+  };
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
+    <NavigationContainer theme={navTheme}>
+      <Stack.Navigator screenOptions={{ headerRight: () => <ThemeToggle /> }}>
         {user ? (
           <>
             <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />

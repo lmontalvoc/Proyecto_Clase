@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { GOOGLE_VISION_API_KEY } from "../config/google.config";
 
 export async function classifyImage(uri: string) {

@@ -1,96 +1,73 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, Image, StyleSheet } from "react-native";
+import React, { useEffect, useState, useContext } from "react";
+import { View, Text, ActivityIndicator, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { auth, db } from "../firebase/firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
+import { ThemeContext } from "../theme/ThemeContext";
 
 interface UserData {
   email: string;
   username: string;
 }
 
-const logo = require("../assets/logo.png");
-
 export default function HomeScreen() {
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigation = useNavigation<any>();
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
+    // Intentar cargar datos del usuario en background, pero no bloquear la UI
     const user = auth.currentUser;
-
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
 
     const userRef = doc(db, "users", user.uid);
-
     const unsubscribe = onSnapshot(
       userRef,
       (docSnap) => {
-        if (docSnap.exists()) {
-          setUserData(docSnap.data() as UserData);
-        }
-        setLoading(false);
+        if (docSnap.exists()) setUserData(docSnap.data() as UserData);
       },
-      (error) => {
-        console.log("Error al escuchar cambios:", error);
-        setLoading(false);
-      }
+      (error) => console.log("Error al escuchar cambios:", error)
     );
 
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-        <Text style={styles.loadingText}>Cargando datos...</Text>
-      </View>
-    );
-  }
-
-  if (!userData) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.notFound}>No hay datos del usuario</Text>
-      </View>
-    );
-  }
-
+  // Show description always; show user info if available
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}> 
       <Image source={require('../assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>¿Qué es Esto?</Text>
-      <Text style={styles.subtitle}>
-        Apunta la cámara a un objeto y deja que la app intente identificarlo.
-      </Text>
-      <CustomButton
-        title="Abrir Cámara"
-        onPress={() => navigation.navigate('Cámara')}
-      />
+
+      <Text style={[styles.title, { color: theme.text }]}>¿Qué es esto?</Text>
+      <Text style={[styles.subtitle, { color: theme.text }]}>Una app que identifica objetos al momento usando visión por IA.</Text>
+
+      <View style={[styles.card, { backgroundColor: theme.card }]}> 
+        <Text style={[styles.cardTitle, { color: theme.text }]}>Cómo funciona</Text>
+        <Text style={[styles.step, { color: theme.text }]}>• Ve a la pestaña Cámara.</Text>
+        <Text style={[styles.step, { color: theme.text }]}>• Apunta al objeto que quieras identificar.</Text>
+        <Text style={[styles.step, { color: theme.text }]}>• Recibirás el resultado al instante gracias a IA.</Text>
+      </View>
+
+      {userData && (
+        <Text style={[styles.info, { color: theme.text }]}>Conectado como: {userData.username || userData.email}</Text>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f2f6ff", justifyContent: "center", alignItems: "center" },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  loadingText: { marginTop: 8, color: "#5b6b8a" },
-  notFound: { color: "#5b6b8a" },
-  card: {
-    width: "90%",
-    maxWidth: 540,
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 24,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    elevation: 3,
-  },
-  logo: { width: 100, height: 100, marginBottom: 12 },
-  appName: { fontSize: 20, fontWeight: "800", color: "#0b2545", marginBottom: 6 },
-  welcome: { fontSize: 22, fontWeight: "700", color: "#0b2545", marginBottom: 8 },
-  info: { color: "#333", marginTop: 6 },
+  loadingText: { marginTop: 8 },
+  notFound: { fontSize: 16 },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  logo: { width: 120, height: 120, marginBottom: 16 },
+  title: { fontSize: 26, fontWeight: "800", marginBottom: 8 },
+  subtitle: { fontSize: 16, textAlign: "center", maxWidth: 560, marginBottom: 10, opacity: 0.95 },
+  card: { width: '100%', maxWidth: 520, padding: 18, borderRadius: 14, alignItems: 'flex-start', marginTop: 8 },
+  cardTitle: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
+  step: { fontSize: 15, marginBottom: 6, lineHeight: 20 },
+  note: { fontSize: 13, marginTop: 8, opacity: 0.85 },
+  cta: { marginTop: 14, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 10 },
+  ctaText: { fontSize: 16, fontWeight: '700' },
+  actions: { width: "100%", alignItems: "center" },
 });
